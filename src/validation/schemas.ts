@@ -5,3 +5,7 @@ export const UserCredentialsSchema = z.object({
   password: z.string(),
 });
 
+
+export const ProductIdSchema = z.object({
+  productId: z.number()
+});

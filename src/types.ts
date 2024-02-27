@@ -21,4 +21,12 @@ export type CartPayload = {
   productId: number;
 };
 
-export type UserCredentials = z.infer<typeof UserCredentialsSchema>;
+export type CredentialsPayload = z.infer<typeof UserCredentialsSchema>;
+
+export type InMemoryDatabase = Map<number, UserCart>;
+
+export type UserCart = Map<number, Cart>;
+
+export type Cart = {
+  quantity: number;
+};
