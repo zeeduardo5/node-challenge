@@ -7,6 +7,7 @@ export default {
     '**/__tests__/**/*.+(ts|tsx|js)',
     '**/?(*.)+(spec|test).+(ts|tsx|js)',
   ],
+  modulePathIgnorePatterns: ['__mocks__'],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
