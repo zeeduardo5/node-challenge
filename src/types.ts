@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { UserCredentialsSchema } from "./validation/schemas";
+
 export type Product = {
   id: number;
   title: string;
@@ -17,3 +20,5 @@ export type User = {
 export type CartPayload = {
   productId: number;
 };
+
+export type UserCredentials = z.infer<typeof UserCredentialsSchema>;

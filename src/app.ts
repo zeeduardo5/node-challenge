@@ -1,12 +1,12 @@
 import express, { Request, Response, NextFunction } from "express";
-import json from "body-parser";
 import axios, { AxiosError } from "axios";
-import { Product } from "./types";
+import { Product, User, UserCredentials } from "./types";
 import { ErrorMessages } from "./messages/error";
+import { UserCredentialsSchema } from "./validation/schemas";
 
 const app = express();
 
-app.use(json());
+app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, World!");
@@ -29,9 +29,8 @@ app.get("/products", async (req: Request, res: Response) => {
       .sort((product1, product2) =>
         product1.title.localeCompare(product2.title)
       );
-      
-    return res.send(filteredProducts);
 
+    return res.send(filteredProducts);
   } catch (e) {
     if (e instanceof AxiosError) {
       return res.status(e.status ?? 500).send(ErrorMessages.PRODUCTS);
@@ -45,7 +44,38 @@ app.post("/products", async (req: Request, res: Response) => {
 });
 
 app.post("/login", async (req: Request, res: Response) => {
-  res.send();
+  let credentials: UserCredentials;
+  try {
+    credentials = UserCredentialsSchema.parse(req.body);
+  } catch (e) {
+    return res.status(400).send(e);
+  }
+
+  try {
+    const user = (
+      await axios.post<User>(
+        "https://dummyjson.com/auth/login",
+        JSON.stringify(credentials),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+    ).data;
+    return res.send({
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatar: user.avatar,
+      token: user.token,
+    });
+  } catch (e) {
+    if (e instanceof AxiosError) {
+      return res.status(e.status ?? 401).send(e?.response?.data);
+    }
+    return res.status(500).send(ErrorMessages.LOGIN);
+  }
 });
 
 app.post("/cart", async (req: Request, res: Response) => {
