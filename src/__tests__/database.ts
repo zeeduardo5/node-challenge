@@ -1,10 +1,13 @@
-import app from '../app';
 import { DatabaseService } from '../database/database.service';
 
-const db = new DatabaseService();
+let db: DatabaseService;
 const customerID = 1;
 
 describe('GET /', () => {
+  beforeAll(() => {
+    db = new DatabaseService();
+  });
+
   it('should add one product', async () => {
     const cart = db.addProduct(customerID, 1);
     expect(cart[0].productId).toBe(1);

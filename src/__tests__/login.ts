@@ -1,8 +1,12 @@
 import app from '../app';
 import supertest from 'supertest';
 import axios, { AxiosError, AxiosHeaders } from 'axios';
-import { UserMock } from './__mocks__/userMock';
+import { userMock } from './__mocks__/userMock';
 import { ErrorMessages } from '../messages/error';
+import {
+  mockAxiosPostError,
+  mockAxiosPostSuccess,
+} from './__mocks__/axiosRequestsMock';
 
 const request = supertest(app);
 const validCredentials = {
@@ -11,19 +15,12 @@ const validCredentials = {
 };
 jest.mock('axios');
 
-function mockAxiosPostSuccess() {
-  (axios.post as jest.Mock).mockImplementation(() =>
-    Promise.resolve({ data: UserMock })
-  );
-}
-
-function mockAxiosPostError(axiosError?: AxiosError) {
-  (axios.post as jest.Mock).mockImplementation(() =>
-    Promise.reject(axiosError ?? null)
-  );
-}
-
 describe('POST /login', () => {
+  beforeEach(() => {
+    mockAxiosPostSuccess();
+    jest.resetAllMocks();
+  });
+
   it('should fail schema validation', async () => {
     const response = await request.post('/login').send({
       username: 'test',
@@ -35,15 +32,18 @@ describe('POST /login', () => {
   it('should login user succesfully', async () => {
     mockAxiosPostSuccess();
     const response = await request.post('/login').send(validCredentials);
+
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(200);
-    expect(response.body.username).toBe(UserMock.username);
+    expect(response.body.username).toBe(userMock.username);
   });
 
   it('should return an user object', async () => {
     mockAxiosPostSuccess();
     const response = await request.post('/login').send(validCredentials);
     const user = response.body;
+
+    expect(axios.post).toHaveBeenCalledTimes(1);
 
     expect(user.hasOwnProperty('firstName')).toBeTruthy();
     expect(user.hasOwnProperty('lastName')).toBeTruthy();
@@ -65,7 +65,10 @@ describe('POST /login', () => {
     };
 
     mockAxiosPostError(error);
+
     const response = await request.post('/login').send(validCredentials);
+
+    expect(axios.post).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(401);
     expect(response.text).toBe('Invalid Credentials');
   });
@@ -74,6 +77,7 @@ describe('POST /login', () => {
     mockAxiosPostError();
     const response = await request.post('/login').send(validCredentials);
 
+    expect(axios.post).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(500);
     expect(response.text).toBe(ErrorMessages.LOGIN);
   });

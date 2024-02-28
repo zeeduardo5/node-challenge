@@ -8,8 +8,8 @@ export async function authenticate(
   res: Response,
   next: NextFunction
 ) {
-  const token = req.header('Authorization');
-
+  const token = req.headers['authorization'];
+  
   if (!token) {
     return res.status(401).send(ErrorMessages.NO_TOKEN);
   }
