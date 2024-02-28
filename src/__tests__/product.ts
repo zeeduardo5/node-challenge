@@ -14,12 +14,14 @@ const request = supertest(app);
 
 describe('GET /products', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
     mockAxiosGetRequestSuccess();
   });
 
+  afterEach(() => jest.resetAllMocks());
+
   it('should return a list of products', async () => {
     const response = await request.get('/products');
+    
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(200);
     expect(response.body.length).toBeGreaterThan(0);

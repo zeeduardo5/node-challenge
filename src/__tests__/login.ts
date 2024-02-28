@@ -8,18 +8,20 @@ import {
   mockAxiosPostSuccess,
 } from './__mocks__/axiosRequestsMock';
 
+jest.mock('axios');
+
 const request = supertest(app);
 const validCredentials = {
   username: 'username',
   password: 'password',
 };
-jest.mock('axios');
 
 describe('POST /login', () => {
   beforeEach(() => {
     mockAxiosPostSuccess();
-    jest.resetAllMocks();
   });
+
+  afterEach(() => jest.resetAllMocks());
 
   it('should fail schema validation', async () => {
     const response = await request.post('/login').send({
@@ -30,7 +32,6 @@ describe('POST /login', () => {
   });
 
   it('should login user succesfully', async () => {
-    mockAxiosPostSuccess();
     const response = await request.post('/login').send(validCredentials);
 
     expect(axios.post).toHaveBeenCalledTimes(1);
@@ -39,7 +40,6 @@ describe('POST /login', () => {
   });
 
   it('should return an user object', async () => {
-    mockAxiosPostSuccess();
     const response = await request.post('/login').send(validCredentials);
     const user = response.body;
 

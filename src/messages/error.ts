@@ -4,5 +4,5 @@ export enum ErrorMessages {
   LOGIN = 'Error During Login',
   NO_TOKEN = 'No Token provided',
   INVALID_TOKEN = 'Invalid Token',
-  INVALID_PRODUCT = 'Product not found',
+  INVALID_PRODUCT = 'Product does not exist',
 }

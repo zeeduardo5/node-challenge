@@ -23,7 +23,7 @@ app.get('/products', async (req: Request, res: Response) => {
       await axios.get<{ products: Product[] }>(`${baseUrl}/products`)
     ).data;
 
-    const filteredProducts = products
+    const filteredAndSortedProducts = products
       .map(({ id, title, description, price, thumbnail }) => ({
         id,
         title,
@@ -35,7 +35,7 @@ app.get('/products', async (req: Request, res: Response) => {
         product1.title.localeCompare(product2.title)
       );
 
-    return res.send(filteredProducts);
+    return res.send(filteredAndSortedProducts);
   } catch (e) {
     if (e instanceof AxiosError) {
       return res.status(e.status ?? 500).send(ErrorMessages.PRODUCTS);

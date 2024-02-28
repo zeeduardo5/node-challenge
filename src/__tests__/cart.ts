@@ -9,8 +9,6 @@ import {
 
 const request = supertest(app);
 
-const baseUrl = 'https://dummyjson.com';
-
 const cartPayload = {
   productId: 1,
 };
@@ -25,6 +23,7 @@ describe('POST /cart', () => {
 
   it('should fail without token', async () => {
     const response = await request.post('/cart').send(cartPayload);
+    
     expect(axios.get).toHaveBeenCalledTimes(0);
     expect(response.status).toBe(401);
     expect(response.text).toBe(ErrorMessages.NO_TOKEN);
@@ -32,6 +31,7 @@ describe('POST /cart', () => {
 
   it('should fail with invalid payload', async () => {
     const response = await request.post('/cart').set('authorization', 'token');
+    
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(400);
   });
@@ -42,14 +42,17 @@ describe('POST /cart', () => {
       .set('authorization', 'token')
       .send(cartPayload);
 
-    expect(response.status).toBe(200);
     const userCart = response.body;
+
+    expect(axios.get).toHaveBeenCalledTimes(2);
+    expect(response.status).toBe(200);
     expect(userCart[0].productId).toBe(1);
     expect(userCart[0].quantity).toBe(1);
   });
 
   it('should not duplicate products', async () => {
     await request.post('/cart').set('Authorization', 'token').send(cartPayload);
+
     const response = await request
       .post('/cart')
       .set('Authorization', 'token')
@@ -57,19 +60,23 @@ describe('POST /cart', () => {
 
     const userCart = response.body;
 
+    expect(axios.get).toHaveBeenCalledTimes(4);
     expect(userCart.length).toBe(1);
     expect(userCart[0].productId).toBe(1);
     expect(userCart[0].quantity).toBe(3);
   });
 
   it('should fail to add product that does not exists', async () => {
-    mockAxiosGetRequestSuccess({})
+    mockAxiosGetRequestSuccess({});
+
     const response = await request
       .post('/cart')
       .set('authorization', 'token')
       .send(cartPayload);
 
+    expect(axios.get).toHaveBeenCalledTimes(2);
     expect(response.status).toBe(400);
+    expect(response.text).toBe(ErrorMessages.INVALID_PRODUCT);
   });
 
   it('should fail to add product when get product fails with unknow error', async () => {
@@ -80,6 +87,7 @@ describe('POST /cart', () => {
       .set('authorization', 'token')
       .send(cartPayload);
 
+    expect(axios.get).toHaveBeenCalledTimes(2);
     expect(response.status).toBe(500);
     expect(response.text).toBe(ErrorMessages.PRODUCT);
   });
@@ -101,6 +109,7 @@ describe('POST /cart', () => {
       .set('authorization', 'token')
       .send(cartPayload);
 
+    expect(axios.get).toHaveBeenCalledTimes(2);
     expect(response.status).toBe(400);
     expect(response.text).toBe('Axios error');
   });

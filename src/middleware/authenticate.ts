@@ -9,7 +9,7 @@ export async function authenticate(
   next: NextFunction
 ) {
   const token = req.headers['authorization'];
-  
+
   if (!token) {
     return res.status(401).send(ErrorMessages.NO_TOKEN);
   }
@@ -22,6 +22,7 @@ export async function authenticate(
         },
       })
     ).data;
+
     res.locals.customerId = user.id;
     next();
   } catch (e) {
