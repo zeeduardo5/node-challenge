@@ -1,10 +1,15 @@
 import express, { Request, Response, NextFunction } from "express";
 import axios, { AxiosError } from "axios";
-import { Product, User, UserCredentials } from "./types";
+import { CartPayload, CredentialsPayload, Product, User } from "./types";
 import { ErrorMessages } from "./messages/error";
-import { UserCredentialsSchema } from "./validation/schemas";
+import { ProductIdSchema, UserCredentialsSchema } from "./validation/schemas";
+import { authenticate } from "./middleware/authenticate";
+import { DatabaseService } from "./database/database.service";
 
 const app = express();
+
+const baseUrl = process.env.URL ?? "https://dummyjson.com";
+const db = new DatabaseService();
 
 app.use(express.json());
 
@@ -15,7 +20,7 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/products", async (req: Request, res: Response) => {
   try {
     const { products } = (
-      await axios.get<{ products: Product[] }>(`https://dummyjson.com/products`)
+      await axios.get<{ products: Product[] }>(`${baseUrl}/products`)
     ).data;
 
     const filteredProducts = products
@@ -44,9 +49,10 @@ app.post("/products", async (req: Request, res: Response) => {
 });
 
 app.post("/login", async (req: Request, res: Response) => {
-  let credentials: UserCredentials;
+  let credentialsPayload: CredentialsPayload;
+
   try {
-    credentials = UserCredentialsSchema.parse(req.body);
+    credentialsPayload = UserCredentialsSchema.parse(req.body);
   } catch (e) {
     return res.status(400).send(e);
   }
@@ -54,8 +60,8 @@ app.post("/login", async (req: Request, res: Response) => {
   try {
     const user = (
       await axios.post<User>(
-        "https://dummyjson.com/auth/login",
-        JSON.stringify(credentials),
+        `${baseUrl}/auth/login`,
+        JSON.stringify(credentialsPayload),
         {
           headers: {
             "Content-Type": "application/json",
@@ -78,8 +84,31 @@ app.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/cart", async (req: Request, res: Response) => {
-  res.send();
+app.post("/cart", authenticate, async (req: Request, res: Response) => {
+  let cartPayload: CartPayload;
+
+  try {
+    cartPayload = ProductIdSchema.parse(req.body);
+  } catch (e) {
+    return res.status(400).send(e);
+  }
+
+  try {
+    const product = (
+      await axios.get<Product>(`${baseUrl}/products/${cartPayload.productId}`)
+    ).data;
+
+    if (!product || !product.id) {
+      return res.status(400).send(ErrorMessages.INVALID_PRODUCT);
+    }
+  } catch (e) {
+    if (e instanceof AxiosError) {
+      return res.status(e.status ?? 400).send(e?.response?.data);
+    }
+    return res.status(500).send(ErrorMessages.PRODUCT);
+  }
+
+  return res.send(db.addProduct(res.locals.customerId, cartPayload.productId));
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
