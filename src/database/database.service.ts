@@ -1,4 +1,4 @@
-import { Cart, InMemoryDatabase, UserCart } from "../types";
+import { Cart, InMemoryDatabase, UserCart } from '../types';
 
 export class DatabaseService {
   db: InMemoryDatabase;

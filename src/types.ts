@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { UserCredentialsSchema } from "./validation/schemas";
+import { z } from 'zod';
+import { UserCredentialsSchema } from './validation/schemas';
 
 export type Product = {
   id: number;

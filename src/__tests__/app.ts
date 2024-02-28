@@ -1,12 +1,12 @@
-import app from "../app";
-import supertest from "supertest";
+import app from '../app';
+import supertest from 'supertest';
 
 const request = supertest(app);
 
-describe("GET /", () => {
+describe('GET /', () => {
   it('should return "Hello, World!"', async () => {
-    const response = await request.get("/");
+    const response = await request.get('/');
     expect(response.status).toBe(200);
-    expect(response.text).toBe("Hello, World!");
+    expect(response.text).toBe('Hello, World!');
   });
 });

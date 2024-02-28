@@ -1,18 +1,18 @@
-import app from "../app";
-import supertest from "supertest";
-import axios, { AxiosError, AxiosHeaders } from "axios";
-import { UserMock } from "./__mocks__/userMock";
-import { ErrorMessages } from "../messages/error";
-import { productsMock } from "./__mocks__/productMock";
+import app from '../app';
+import supertest from 'supertest';
+import axios, { AxiosError, AxiosHeaders } from 'axios';
+import { UserMock } from './__mocks__/userMock';
+import { ErrorMessages } from '../messages/error';
+import { productsMock } from './__mocks__/productMock';
 
 const request = supertest(app);
 
-const baseUrl = "https://dummyjson.com";
+const baseUrl = 'https://dummyjson.com';
 
 const cartPayload = {
   productId: 1,
 };
-jest.mock("axios");
+jest.mock('axios');
 
 function mockAxiosGetSuccess(
   userData: Record<string, string | number>,
@@ -43,7 +43,7 @@ function mockAxiosGetSuccessAndError(
           data: userData,
         });
       default:
-        return Promise.reject(axiosError ?? null)
+        return Promise.reject(axiosError ?? null);
     }
   });
 }
@@ -54,19 +54,19 @@ function mockAxiosGetError(axiosError?: AxiosError) {
   );
 }
 
-describe("POST /cart", () => {
-  it("should fail without token", async () => {
-    const response = await request.post("/cart").send(cartPayload);
+describe('POST /cart', () => {
+  it('should fail without token', async () => {
+    const response = await request.post('/cart').send(cartPayload);
     expect(axios.get).toHaveBeenCalledTimes(0);
     expect(response.status).toBe(401);
     expect(response.text).toBe(ErrorMessages.NO_TOKEN);
   });
 
-  it("should fail with invalid token", async () => {
+  it('should fail with invalid token', async () => {
     mockAxiosGetError();
     const response = await request
-      .post("/cart")
-      .set("Authorization", "token")
+      .post('/cart')
+      .set('Authorization', 'token')
       .send(cartPayload);
 
     expect(axios.get).toHaveBeenCalled();
@@ -74,21 +74,21 @@ describe("POST /cart", () => {
     expect(response.text).toBe(ErrorMessages.INVALID_TOKEN);
   });
 
-  it("should fail with invalid payload", async () => {
+  it('should fail with invalid payload', async () => {
     mockAxiosGetSuccess(UserMock, {});
     const response = await request
-      .post("/cart")
-      .set("Authorization", "token")
+      .post('/cart')
+      .set('Authorization', 'token')
       .send({});
     expect(response.status).toBe(400);
   });
 
-  it("should add product to the in memory db", async () => {
+  it('should add product to the in memory db', async () => {
     mockAxiosGetSuccess(UserMock, productsMock[0]);
 
     const response = await request
-      .post("/cart")
-      .set("Authorization", "token")
+      .post('/cart')
+      .set('Authorization', 'token')
       .send(cartPayload);
 
     expect(response.status).toBe(200);
@@ -97,54 +97,53 @@ describe("POST /cart", () => {
     expect(userCart[0].quantity).toBe(1);
   });
 
-  it("should fail to add product that does not exists", async () => {
+  it('should fail to add product that does not exists', async () => {
     mockAxiosGetSuccess(UserMock, {});
 
     const response = await request
-      .post("/cart")
-      .set("Authorization", "token")
+      .post('/cart')
+      .set('Authorization', 'token')
       .send(cartPayload);
 
     expect(response.status).toBe(400);
   });
 
-  it("should fail to add product when get product fails with unknow error", async () => {
+  it('should fail to add product when get product fails with unknow error', async () => {
     mockAxiosGetSuccessAndError(UserMock);
 
     const response = await request
-      .post("/cart")
-      .set("Authorization", "token")
+      .post('/cart')
+      .set('Authorization', 'token')
       .send(cartPayload);
 
     expect(response.status).toBe(500);
     expect(response.text).toBe(ErrorMessages.PRODUCT);
   });
 
-
-  it("should fail to add product when get product fails with axios error", async () => {
+  it('should fail to add product when get product fails with axios error', async () => {
     const error = new AxiosError();
     error.status = 400;
     mockAxiosGetSuccessAndError(UserMock, error);
 
     const response = await request
-      .post("/cart")
-      .set("Authorization", "token")
+      .post('/cart')
+      .set('Authorization', 'token')
       .send(cartPayload);
 
     expect(response.status).toBe(400);
     expect(response.text).toBe(ErrorMessages.PRODUCT);
   });
 
-  it("should add two diferent products to the in memory db", async () => {
+  it('should add two diferent products to the in memory db', async () => {
     mockAxiosGetSuccess(UserMock, productsMock[0]);
 
-    await request.post("/cart").set("Authorization", "token").send(cartPayload);
+    await request.post('/cart').set('Authorization', 'token').send(cartPayload);
 
-    await request.post("/cart").set("Authorization", "token").send(cartPayload);
+    await request.post('/cart').set('Authorization', 'token').send(cartPayload);
 
     const response = await request
-      .post("/cart")
-      .set("Authorization", "token")
+      .post('/cart')
+      .set('Authorization', 'token')
       .send({ productId: 2 });
 
     const userCart = response.body;
