@@ -34,3 +34,5 @@ export type Cart = {
 export type UserCart = Map<ProductId, Cart>;
 
 export type InMemoryDatabase = Map<CustomerId, UserCart>;
+
+export type TokenPayload = User & { id: number };

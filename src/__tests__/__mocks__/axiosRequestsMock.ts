@@ -9,10 +9,6 @@ export function mockAxiosGetRequestSuccess(
 ) {
   (axios.get as jest.Mock).mockImplementation((url) => {
     switch (url) {
-      case `${baseUrl}/auth/me`:
-        return Promise.resolve({
-          data: userMock,
-        });
       case `${baseUrl}/products`:
         return Promise.resolve({
           data: {
@@ -43,19 +39,4 @@ export function mockAxiosPostError(axiosError?: AxiosError) {
   (axios.post as jest.Mock).mockImplementation(() =>
     Promise.reject(axiosError ?? null)
   );
-}
-
-export function mockAxiosGetAuthSuccessAndProductError(
-  axiosError?: AxiosError
-) {
-  (axios.get as jest.Mock).mockImplementation((url) => {
-    switch (url) {
-      case `${baseUrl}/auth/me`:
-        return Promise.resolve({
-          data: userMock,
-        });
-      default:
-        return Promise.reject(axiosError ?? null);
-    }
-  });
 }

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import axios from 'axios';
-import { User } from '../types';
 import { ErrorMessages } from '../messages/error';
+import { decode } from 'jsonwebtoken';
+import { TokenPayload } from '../types';
 
 export async function authenticate(
   req: Request,
@@ -15,17 +15,16 @@ export async function authenticate(
   }
 
   try {
-    const user = (
-      await axios.get<User & { id: string }>(`https://dummyjson.com/auth/me`, {
-        headers: {
-          Authorization: token,
-        },
-      })
-    ).data;
+    const decodedToken = decode(token.split(' ')[1]);
 
-    res.locals.customerId = user.id;
+    if (!decodedToken || !(decodedToken as TokenPayload).id)
+      throw new Error(ErrorMessages.INVALID_TOKEN);
+
+    res.locals.customerId = (decodedToken as TokenPayload).id;
     next();
-  } catch (e) {
-    return res.status(401).send(ErrorMessages.INVALID_TOKEN);
+  } catch (e: unknown) {
+    const message =
+      e instanceof Error ? e.message : ErrorMessages.INVALID_TOKEN;
+    return res.status(401).send(message);
   }
 }

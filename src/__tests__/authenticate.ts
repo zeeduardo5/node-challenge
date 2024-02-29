@@ -1,12 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { authenticate } from '../middleware/authenticate';
 import { ErrorMessages } from '../messages/error';
-import {
-  mockAxiosGetError,
-  mockAxiosGetRequestSuccess,
-} from './__mocks__/axiosRequestsMock';
-
-jest.mock('axios');
+import { userMock } from './__mocks__/userMock';
 
 describe('Authentication middleware', () => {
   let mockRequest: Partial<Request>;
@@ -18,7 +13,6 @@ describe('Authentication middleware', () => {
     mockResponse.status = jest.fn(() => mockResponse);
     mockResponse.send = jest.fn();
     mockResponse.locals = {};
-    mockAxiosGetRequestSuccess();
   });
 
   afterEach(() => jest.resetAllMocks());
@@ -34,7 +28,7 @@ describe('Authentication middleware', () => {
   });
 
   it('should call next with valid token', async () => {
-    mockRequest.headers = { authorization: 'token' };
+    mockRequest.headers = { authorization: `Bearer ${<string>userMock.token}` };
 
     await authenticate(
       mockRequest as Request,
@@ -47,8 +41,7 @@ describe('Authentication middleware', () => {
   });
 
   it('should fail with invalid token', async () => {
-    mockRequest.headers = { authorization: 'token' };
-    mockAxiosGetError();
+    mockRequest.headers = { authorization: 'Bearer invalidToken' };
     await authenticate(
       mockRequest as Request,
       mockResponse as Response,

@@ -23,8 +23,8 @@ app.get('/products', async (req: Request, res: Response) => {
       await axios.get<{ products: Product[] }>(`${baseUrl}/products`)
     ).data;
 
-    const filteredAndSortedProducts = products
-      .map(({ id, title, description, price, thumbnail }) => ({
+    const filteredAndSortedProducts: Product[] = products
+      .map(({ id, title, description, price, thumbnail }: Product) => ({
         id,
         title,
         description,
