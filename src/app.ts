@@ -1,30 +1,30 @@
-import express, { Request, Response, NextFunction } from "express";
-import axios, { AxiosError } from "axios";
-import { CartPayload, CredentialsPayload, Product, User } from "./types";
-import { ErrorMessages } from "./messages/error";
-import { ProductIdSchema, UserCredentialsSchema } from "./validation/schemas";
-import { authenticate } from "./middleware/authenticate";
-import { DatabaseService } from "./database/database.service";
+import express, { Request, Response, NextFunction } from 'express';
+import axios, { AxiosError } from 'axios';
+import { CartPayload, CredentialsPayload, Product, User } from './types';
+import { ErrorMessages } from './messages/error';
+import { ProductIdSchema, UserCredentialsSchema } from './validation/schemas';
+import { authenticate } from './middleware/authenticate';
+import { DatabaseService } from './database/database.service';
 
 const app = express();
 
-const baseUrl = process.env.URL ?? "https://dummyjson.com";
+const baseUrl = process.env.URL ?? 'https://dummyjson.com';
 const db = new DatabaseService();
 
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, World!");
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello, World!');
 });
 
-app.get("/products", async (req: Request, res: Response) => {
+app.get('/products', async (req: Request, res: Response) => {
   try {
     const { products } = (
       await axios.get<{ products: Product[] }>(`${baseUrl}/products`)
     ).data;
 
-    const filteredProducts = products
-      .map(({ id, title, description, price, thumbnail }) => ({
+    const filteredAndSortedProducts: Product[] = products
+      .map(({ id, title, description, price, thumbnail }: Product) => ({
         id,
         title,
         description,
@@ -35,7 +35,7 @@ app.get("/products", async (req: Request, res: Response) => {
         product1.title.localeCompare(product2.title)
       );
 
-    return res.send(filteredProducts);
+    return res.send(filteredAndSortedProducts);
   } catch (e) {
     if (e instanceof AxiosError) {
       return res.status(e.status ?? 500).send(ErrorMessages.PRODUCTS);
@@ -44,11 +44,11 @@ app.get("/products", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/products", async (req: Request, res: Response) => {
+app.post('/products', async (req: Request, res: Response) => {
   res.send();
 });
 
-app.post("/login", async (req: Request, res: Response) => {
+app.post('/login', async (req: Request, res: Response) => {
   let credentialsPayload: CredentialsPayload;
 
   try {
@@ -64,7 +64,7 @@ app.post("/login", async (req: Request, res: Response) => {
         JSON.stringify(credentialsPayload),
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       )
@@ -84,7 +84,7 @@ app.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/cart", authenticate, async (req: Request, res: Response) => {
+app.post('/cart', authenticate, async (req: Request, res: Response) => {
   let cartPayload: CartPayload;
 
   try {

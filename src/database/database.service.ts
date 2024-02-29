@@ -1,4 +1,4 @@
-import { Cart, InMemoryDatabase, UserCart } from "../types";
+import { Cart, InMemoryDatabase, UserCart } from '../types';
 
 export class DatabaseService {
   db: InMemoryDatabase;
@@ -6,8 +6,8 @@ export class DatabaseService {
     this.db = new Map();
   }
 
-  public addProduct(userId: number, productId: number) {
-    const currentUserCart = this.getCurrentUserCart(userId);
+  public addProduct(customerId: number, productId: number) {
+    const currentUserCart = this.getCurrentUserCart(customerId);
     let quantity = 1;
 
     if (currentUserCart.has(productId)) {
@@ -18,17 +18,17 @@ export class DatabaseService {
       quantity,
     });
 
-    this.db.set(userId, currentUserCart);
+    this.db.set(customerId, currentUserCart);
 
     return this.getFormatedUserCart(currentUserCart);
   }
 
-  private getCurrentUserCart(userId: number): UserCart {
-    if (!this.db.has(userId)) {
-      this.db.set(userId, new Map<number, Cart>());
+  private getCurrentUserCart(customerId: number): UserCart {
+    if (!this.db.has(customerId)) {
+      this.db.set(customerId, new Map<number, Cart>());
     }
 
-    return this.db.get(userId)!;
+    return this.db.get(customerId)!;
   }
 
   private getFormatedUserCart(cart: UserCart) {

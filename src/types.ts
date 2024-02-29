@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { UserCredentialsSchema } from "./validation/schemas";
+import { z } from 'zod';
+import { UserCredentialsSchema } from './validation/schemas';
 
 export type Product = {
   id: number;
@@ -23,10 +23,16 @@ export type CartPayload = {
 
 export type CredentialsPayload = z.infer<typeof UserCredentialsSchema>;
 
-export type InMemoryDatabase = Map<number, UserCart>;
+export type CustomerId = number;
 
-export type UserCart = Map<number, Cart>;
+export type ProductId = number;
 
 export type Cart = {
   quantity: number;
 };
+
+export type UserCart = Map<ProductId, Cart>;
+
+export type InMemoryDatabase = Map<CustomerId, UserCart>;
+
+export type TokenPayload = User & { id: number };
