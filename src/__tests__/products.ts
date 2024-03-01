@@ -1,7 +1,7 @@
 import app from '../app';
 import supertest from 'supertest';
 import axios, { AxiosError } from 'axios';
-import { productsMock } from './__mocks__/productMock';
+import { productsMock } from './__mocks__/productsMock';
 import { Product } from '../types';
 import { ErrorMessages } from '../messages/error';
 import {
@@ -21,7 +21,7 @@ describe('GET /products', () => {
 
   it('should return a list of products', async () => {
     const response = await request.get('/products');
-    
+
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(200);
     expect(response.body.length).toBeGreaterThan(0);
@@ -42,17 +42,18 @@ describe('GET /products', () => {
     const firstProduct = products[0];
 
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(firstProduct.hasOwnProperty('title')).toBeTruthy();
-    expect(firstProduct.hasOwnProperty('description')).toBeTruthy();
-    expect(firstProduct.hasOwnProperty('id')).toBeTruthy();
-    expect(firstProduct.hasOwnProperty('price')).toBeTruthy();
-    expect(firstProduct.hasOwnProperty('thumbnail')).toBeTruthy();
+
+    expect(firstProduct).toHaveProperty('title');
+    expect(firstProduct).toHaveProperty('id');
+    expect(firstProduct).toHaveProperty('description');
+    expect(firstProduct).toHaveProperty('price');
+    expect(firstProduct).toHaveProperty('thumbnail');
 
     expect(firstProduct.hasOwnProperty('brand')).toBeFalsy();
     expect(firstProduct.hasOwnProperty('category')).toBeFalsy();
   });
 
-  it('should fail to return products', async () => {
+  it('should fail to return products with external api error', async () => {
     const error = new AxiosError();
     error.status = 400;
     mockAxiosGetError(error);
