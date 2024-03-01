@@ -27,11 +27,25 @@ export type CustomerId = number;
 
 export type ProductId = number;
 
-export type Cart = {
+export type CartProduct = {
   quantity: number;
+  product: Product;
 };
 
-export type UserCart = Map<ProductId, Cart>;
+export type UserCart = {
+  totalProducts: number;
+  total: number;
+  cartProducts: CartProducts;
+};
+
+export type CartResponse = {
+  products: CartProduct[];
+  total: number;
+  totalProducts: number;
+  customerId: number;
+}
+
+export type CartProducts = Map<ProductId, CartProduct>;
 
 export type InMemoryDatabase = Map<CustomerId, UserCart>;
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { authenticate } from '../middleware/authenticate';
 import { ErrorMessages } from '../messages/error';
-import { userMock } from './__mocks__/userMock';
+import { apiUserResponseMock } from './__mocks__/userMock';
 
 describe('Authentication middleware', () => {
   let mockRequest: Partial<Request>;
@@ -17,18 +17,8 @@ describe('Authentication middleware', () => {
 
   afterEach(() => jest.resetAllMocks());
 
-  it('should fail without token', async () => {
-    await authenticate(
-      mockRequest as Request,
-      mockResponse as Response,
-      nextFunction
-    );
-
-    expect(mockResponse.send).toBeCalledWith(ErrorMessages.NO_TOKEN);
-  });
-
   it('should call next with valid token', async () => {
-    mockRequest.headers = { authorization: `Bearer ${<string>userMock.token}` };
+    mockRequest.headers = { authorization: `Bearer ${<string>apiUserResponseMock.token}` };
 
     await authenticate(
       mockRequest as Request,
@@ -38,6 +28,16 @@ describe('Authentication middleware', () => {
 
     expect(mockResponse.locals.customerId).toBe(15);
     expect(nextFunction).toHaveBeenCalled();
+  });
+
+  it('should fail without token', async () => {
+    await authenticate(
+      mockRequest as Request,
+      mockResponse as Response,
+      nextFunction
+    );
+
+    expect(mockResponse.send).toBeCalledWith(ErrorMessages.NO_TOKEN);
   });
 
   it('should fail with invalid token', async () => {

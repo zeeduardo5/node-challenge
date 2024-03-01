@@ -1,4 +1,4 @@
-export const userMock: Record<string, string | number> = {
+export const apiUserResponseMock: Record<string, string | number> = {
   id: 15,
   username: 'kminchelle',
   email: 'kminchelle@qq.com',

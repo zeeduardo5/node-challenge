@@ -1,7 +1,7 @@
 import app from '../app';
 import supertest from 'supertest';
 import axios, { AxiosError, AxiosHeaders } from 'axios';
-import { userMock } from './__mocks__/userMock';
+import { apiUserResponseMock } from './__mocks__/userMock';
 import { ErrorMessages } from '../messages/error';
 import {
   mockAxiosPostError,
@@ -23,6 +23,27 @@ describe('POST /login', () => {
 
   afterEach(() => jest.resetAllMocks());
 
+  it('should login user succesfully', async () => {
+    const response = await request.post('/login').send(validCredentials);
+
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(response.status).toBe(200);
+    expect(response.body.username).toBe(apiUserResponseMock.username);
+  });
+
+  it('should return an user object', async () => {
+    const response = await request.post('/login').send(validCredentials);
+    const user = response.body;
+
+    expect(user).toHaveProperty('firstName');
+    expect(user).toHaveProperty('lastName');
+    expect(user).toHaveProperty('token');
+    expect(user).toHaveProperty('username');
+
+    expect(user.hasOwnProperty('gender')).toBeFalsy();
+    expect(user.hasOwnProperty('image')).toBeFalsy();
+  });
+
   it('should fail schema validation', async () => {
     const response = await request.post('/login').send({
       username: 'test',
@@ -31,30 +52,7 @@ describe('POST /login', () => {
     expect(response.status).toBe(400);
   });
 
-  it('should login user succesfully', async () => {
-    const response = await request.post('/login').send(validCredentials);
-
-    expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(response.status).toBe(200);
-    expect(response.body.username).toBe(userMock.username);
-  });
-
-  it('should return an user object', async () => {
-    const response = await request.post('/login').send(validCredentials);
-    const user = response.body;
-
-    expect(axios.post).toHaveBeenCalledTimes(1);
-
-    expect(user.hasOwnProperty('firstName')).toBeTruthy();
-    expect(user.hasOwnProperty('lastName')).toBeTruthy();
-    expect(user.hasOwnProperty('token')).toBeTruthy();
-    expect(user.hasOwnProperty('username')).toBeTruthy();
-
-    expect(user.hasOwnProperty('gender')).toBeFalsy();
-    expect(user.hasOwnProperty('image')).toBeFalsy();
-  });
-
-  it('should fail to login with error from the 3rd party', async () => {
+  it('should fail to login with with external api error', async () => {
     const error = new AxiosError();
     error.response = {
       config: { headers: new AxiosHeaders() },

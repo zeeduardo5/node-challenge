@@ -1,23 +1,22 @@
 import axios, { AxiosError } from 'axios';
-import { productsMock } from './productMock';
-import { userMock } from './userMock';
-
-const baseUrl = 'https://dummyjson.com';
+import { apiProductsResponseMock, productsMock } from './productsMock';
+import { apiUserResponseMock } from './userMock';
+import { PRODUCTS_URL } from '../../constants';
 
 export function mockAxiosGetRequestSuccess(
   product?: Record<string, string | string[] | number>
 ) {
   (axios.get as jest.Mock).mockImplementation((url) => {
     switch (url) {
-      case `${baseUrl}/products`:
+      case PRODUCTS_URL:
         return Promise.resolve({
           data: {
-            products: [...productsMock],
+            products: [...apiProductsResponseMock],
           },
         });
       default:
         return Promise.resolve({
-          data: product ?? productsMock[0],
+          data: product ?? apiProductsResponseMock[0],
         });
     }
   });
@@ -31,7 +30,7 @@ export function mockAxiosGetError(axiosError?: AxiosError) {
 
 export function mockAxiosPostSuccess() {
   (axios.post as jest.Mock).mockImplementation(() =>
-    Promise.resolve({ data: userMock })
+    Promise.resolve({ data: apiUserResponseMock })
   );
 }
 

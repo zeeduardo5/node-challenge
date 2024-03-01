@@ -1,4 +1,6 @@
-export const productsMock: Record<string, string | string[] | number>[] = [
+import { Product } from "../../types";
+
+export const apiProductsResponseMock: Record<string, string | string[] | number>[] = [
   {
     id: 6,
     title: 'MacBook Pro',
@@ -56,5 +58,33 @@ export const productsMock: Record<string, string | string[] | number>[] = [
       'https://cdn.dummyjson.com/product-images/30/3.jpg',
       'https://cdn.dummyjson.com/product-images/30/thumbnail.jpg',
     ],
+  },
+];
+
+
+export const productsMock: Product[] = [
+  {
+    id: 6,
+    title: 'MacBook Pro',
+    description:
+      'MacBook Pro 2021 with mini-LED display may launch between September, November',
+    price: 1749,
+    thumbnail: 'https://cdn.dummyjson.com/product-images/6/thumbnail.png',
+  },
+  {
+    id: 8,
+    title: 'Microsoft Surface Laptop 4',
+    description:
+      'Style and speed. Stand out on HD video calls backed by Studio Mics. Capture ideas on the vibrant touchscreen.',
+    price: 1499,
+    thumbnail: 'https://cdn.dummyjson.com/product-images/8/thumbnail.jpg',
+  },
+  {
+    id: 30,
+    title: 'Key Holder',
+    description:
+      'Attractive DesignMetallic materialFour key hooksReliable & DurablePremium Quality',
+    price: 30,
+    thumbnail: 'https://cdn.dummyjson.com/product-images/30/thumbnail.jpg',
   },
 ];
