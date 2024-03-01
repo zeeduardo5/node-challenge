@@ -16,7 +16,7 @@ export class LoginController {
     return user;
   }
 
-  extractRequiredProductProperties(user: User): User {
+  private extractRequiredProductProperties(user: User): User {
     return {
       username: user.username,
       firstName: user.firstName,

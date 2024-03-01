@@ -5,8 +5,7 @@ let db: DatabaseService;
 const customerID = 1;
 const [mockProduct1, mockProduct2] = productsMock;
 
-describe('GET /', () => {
-  beforeAll(() => {});
+describe('Database Service', () => {
   beforeEach(() => {
     db = new DatabaseService();
   });
