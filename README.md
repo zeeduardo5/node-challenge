@@ -24,7 +24,7 @@ To run the server:
 $ npm run dev
 ```
 
-To run the unit test:
+To run the unit tests:
 
 ```
 $ npm test
