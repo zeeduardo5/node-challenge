@@ -30,12 +30,54 @@ $ npm run dev
 - Output product list must be an array of Product (see type definition).
 - Documentation is available at https://dummyjson.com/docs/products
 
+### Solution:
+
+#### URL : http://localhost:3000/products
+#### Method GET
+
+#### Response Example
+```
+[
+  {
+    "id": 21,
+    "title": "- Daal Masoor 500 grams",
+    "description": "Fine quality Branded Product Keep in a cool and dry place",
+    "price": 20,
+    "thumbnail": "https://cdn.dummyjson.com/product-images/21/thumbnail.png"
+  },
+  ...
+]
+```
+
 ## Task 2 - Login
 
 - Write a POST call that will take username and password from body and will authenticate against the endpoint https://dummyjson.com/auth/login
 - If credentials are invalid throw the proper HTTP error.
 - As response use type User (see type definition).
 - Documentation is available at https://dummyjson.com/docs/auth
+
+### Solution:
+
+#### URL : http://localhost:3000/login
+#### Method POST
+#### Request Body
+```
+{
+  "username" : string,
+  "password : string
+}
+```
+#### Response Example
+```
+
+{
+  "username": "kminchelle",
+  "firstName": "Jeanne",
+  "lastName": "Halvorson",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUsInVzZXJuYW1lIjoia21pbmNoZWxsZSIsImVtYWlsIjoia21pbmNoZWxsZUBxcS5jb20iLCJmaXJzdE5hbWUiOiJKZWFubmUiLCJsYXN0TmFtZSI6IkhhbHZvcnNvbiIsImdlbmRlciI6ImZlbWFsZSIsImltYWdlIjoiaHR0cHM6Ly9yb2JvaGFzaC5vcmcvSmVhbm5lLnBuZz9zZXQ9c2V0NCIsImlhdCI6MTcwOTMwOTMxOCwiZXhwIjoxNzA5MzEyOTE4fQ.BDmGEVnuiyW0oyPv2M3Cv3Ee5RPj2fYo75KSN7BN09M"
+}
+```
+
 
 ## Task 3 - Cart
 
@@ -45,3 +87,38 @@ $ npm run dev
 - You'll need to write a middleware to decode token and block and unauthorized attempt.
 - Token payload has customer's ID and you should use that.
 - Avoid product duplication.
+
+### Solution:
+
+#### URL : http://localhost:3000/cart
+#### Method POST
+#### HTTP authentication : Bearer
+#### Request Body
+```
+{
+  "productId" : number
+}
+```
+#### Response Example
+```
+{
+  "products": [
+    {
+      "quantity": 1,
+      "product": {
+        "id": 3,
+        "title": "Samsung Universe 9",
+        "description": "Samsung's new variant which goes beyond Galaxy to the Universe",
+        "price": 1249,
+        "thumbnail": "https://cdn.dummyjson.com/product-images/3/thumbnail.jpg"
+      }
+    }
+  ],
+  "total": 1249,
+  "totalProducts": 1,
+  "customerId": 15
+}
+```
+
+
+
