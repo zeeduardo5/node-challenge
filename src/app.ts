@@ -24,7 +24,7 @@ app.get('/', (req: Request, res: Response) => {
 app.get('/products', async (req: Request, res: Response) => {
   try {
     const products = await productsController.getProducts();
-    return res.send(products);
+    return res.status(200).json(products);
   } catch (e) {
     if (e instanceof AxiosError) {
       return res.status(e.status ?? 500).send(ErrorMessages.PRODUCTS);
@@ -48,7 +48,7 @@ app.post('/login', async (req: Request, res: Response) => {
 
   try {
     const user = await loginController.login(credentialsPayload);
-    return res.status(200).send(user);
+    return res.status(200).json(user);
   } catch (e) {
     if (e instanceof AxiosError) {
       return res.status(e.status ?? 401).send(e?.response?.data);
@@ -76,7 +76,7 @@ app.post('/cart', authenticate, async (req: Request, res: Response) => {
     }
     return res
       .status(201)
-      .send(cartController.addProductToCart(res.locals.customerId, product));
+      .json(cartController.addProductToCart(res.locals.customerId, product));
   } catch (e) {
     if (e instanceof AxiosError) {
       return res.status(e.status ?? 400).send(e?.response?.data);

@@ -32,7 +32,7 @@ export type CartProduct = {
   product: Product;
 };
 
-export type UserCart = {
+export type CustomerCart = {
   totalProducts: number;
   total: number;
   cartProducts: CartProducts;
@@ -47,6 +47,6 @@ export type CartResponse = {
 
 export type CartProducts = Map<ProductId, CartProduct>;
 
-export type InMemoryDatabase = Map<CustomerId, UserCart>;
+export type InMemoryDatabase = Map<CustomerId, CustomerCart>;
 
 export type TokenPayload = User & { id: number };

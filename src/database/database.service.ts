@@ -1,24 +1,26 @@
 import {
   CartProduct,
+  CartResponse,
+  CustomerCart,
   InMemoryDatabase,
   Product,
   ProductId,
-  UserCart,
 } from '../types';
 
 export class DatabaseService {
   db: InMemoryDatabase;
+
   constructor() {
     this.db = new Map();
   }
 
-  public addProduct(customerId: number, product: Product) {
-    const currentUserCart = this.getCurrentUserCart(customerId);
-    const { cartProducts } = currentUserCart;
+  public addProduct(customerId: number, product: Product): CartResponse {
+    const customerCart = this.getCustomerCart(customerId);
+    const { cartProducts } = customerCart;
     let quantity = 1;
 
-    currentUserCart.total += product.price;
-    currentUserCart.totalProducts += 1;
+    customerCart.total += product.price;
+    customerCart.totalProducts += 1;
 
     if (cartProducts.has(product.id)) {
       quantity = cartProducts.get(product.id)!.quantity + 1;
@@ -29,14 +31,14 @@ export class DatabaseService {
       product,
     });
 
-    currentUserCart.cartProducts = new Map(cartProducts);
+    customerCart.cartProducts = new Map(cartProducts);
 
-    this.db.set(customerId, currentUserCart);
+    this.db.set(customerId, customerCart);
 
-    return this.getCartResponse(currentUserCart, customerId);
+    return this.getCartResponse(customerCart, customerId);
   }
 
-  private getCurrentUserCart(customerId: number): UserCart {
+  private getCustomerCart(customerId: number): CustomerCart {
     if (!this.db.has(customerId)) {
       this.db.set(customerId, this.initializeCustomerCart());
     }
@@ -44,7 +46,7 @@ export class DatabaseService {
     return this.db.get(customerId)!;
   }
 
-  private getCartResponse(cart: UserCart, customerId: number) {
+  private getCartResponse(cart: CustomerCart, customerId: number) {
     const { cartProducts, total, totalProducts } = cart;
     return {
       products: Array.from(cartProducts, ([, value]) => value),
@@ -54,7 +56,7 @@ export class DatabaseService {
     };
   }
 
-  private initializeCustomerCart(): UserCart {
+  private initializeCustomerCart(): CustomerCart {
     return {
       total: 0,
       totalProducts: 0,

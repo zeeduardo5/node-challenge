@@ -119,6 +119,9 @@ $ npm run dev
   "customerId": 15
 }
 ```
+#### Note: 
+In order to address 'avoid product duplication' requirement, I added a quantity property to each product in the cart. When the user adds a product that already exists in the cart, the product doesn't get duplicated, only the product quantity increases by one like in a real world webshop.
 
+Since there was no specification about the response type for this task, I created this response object so the tester of this API knows the current state of the cart after adding one product.
 
 
